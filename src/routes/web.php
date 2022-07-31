@@ -46,7 +46,7 @@ Route::get('/post/update/{id}', function ($id) {
 
 Route::get('/post/delete/{id}', function ($id) {
     Post::destroy($id);
-    return ddd('destroy success' . $id);
+    ddd('destroy success' . $id);
 });
 
 Route::get('/posts/sandbox/table', function () {
@@ -195,4 +195,60 @@ Route::get('/posts/sandbox/getAttribute', function () {
 Route::get('/posts/sandbox/scope', function () {
     $post = Post::updateLastFiveMinutes()->get()->toArray();
     ddd($post);
+});
+
+Route::get('/posts/sandbox/order', function () {
+    Post::orderBy('updated_at')->get()->toArray();
+    Post::orderBy('title')->orderBy('id')->get()->toArray();
+    Post::orderBy('title', 'desc')->orderBy('id')->get()->toArray();
+
+    ddd('queryを見てね');
+});
+
+Route::get('/posts/sandbox/update/{id}', function ($id) {
+    $post = Post::find($id);
+    $randNum = rand(0,9999);
+    $post->update(
+        [
+            'title' => '投稿の更新テスト' . $randNum,
+            'content_text' => '投稿内容はこちらです' . $randNum,
+        ]
+    );
+    ddd('update success' . $randNum);
+});
+
+Route::get('/posts/sandbox/FindOrFail/{id}', function ($id) {
+    try{
+        $post = Post::findOrFail($id);
+    }catch (Exception $e){
+        ddd($e);
+    }
+    ddd($post);
+});
+
+Route::get('/posts/sandbox/UpdateOrNew/{id}', function ($id) {
+    $randNum = rand(0,9999);
+    $post = Post::findOrNew($id);
+    $post->title = '投稿の更新テスト' . $randNum;
+    $post->content_text = '投稿内容はこちらです' . $randNum;
+    $post->user_id = 1;
+    $post->save();
+    ddd($randNum . 'で更新しました' , $post);
+});
+
+Route::get('/posts/sandbox/firstOr/{id}', function ($id) {
+    $post = Post::whereId($id)->firstOr(function () {
+        throw new Exception('取得できませんでした');
+    });
+    ddd($post);
+});
+
+Route::get('/post/sandbox/withTrashed', function () {
+    $postsWithTrashed = Post::withTrashed()->get();
+    ddd($postsWithTrashed->toArray());
+});
+
+Route::get('/post/sandbox/onlyTrashed', function () {
+    $postsOnlyTrashed = Post::onlyTrashed()->get();
+    ddd($postsOnlyTrashed->toArray());
 });
