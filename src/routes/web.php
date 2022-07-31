@@ -28,7 +28,7 @@ Route::get('/post/entry', function () {
     $newPost->title = '投稿のテスト' . $randNum;
     $newPost->content_text = '投稿内容はこちらです' . $randNum;
     $newPost->save();
-    return ddd('entry success' . $randNum);
+    ddd('entry success' . $randNum);
 });
 
 Route::get('/post/{id}', function ($id) {
