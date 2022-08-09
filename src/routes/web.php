@@ -11,8 +11,15 @@
 |
 */
 
+use App\AttachTag;
+use App\Comment;
+use App\Image;
 use App\Post;
+use App\Tag;
+use App\User;
+use App\UserProfile;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 Route::get('/', function () {
     return view('welcome');
@@ -237,9 +244,9 @@ Route::get('/posts/sandbox/UpdateOrNew/{id}', function ($id) {
 });
 
 Route::get('/posts/sandbox/firstOr/{id}', function ($id) {
-    $post = Post::whereId($id)->firstOr(function () {
-        throw new Exception('取得できませんでした');
-    });
+    $post = Post::whereId($id)->firstOr(fn () =>
+        new Exception('取得できませんでした')
+    );
     ddd($post);
 });
 
@@ -251,4 +258,121 @@ Route::get('/post/sandbox/withTrashed', function () {
 Route::get('/post/sandbox/onlyTrashed', function () {
     $postsOnlyTrashed = Post::onlyTrashed()->get();
     ddd($postsOnlyTrashed->toArray());
+});
+
+Route::get('/posts/sandbox/chunk/', function () {
+    $posts = Post::chunk(1, function ($posts){
+        return $posts->get('id');
+    });
+    ddd($posts);
+});
+
+Route::get('/seed/relationalData/reset', function () {
+    // データを削除
+    Schema::disableForeignKeyConstraints();
+    Comment::truncate();
+    Post::truncate();
+    User::truncate();
+    Tag::truncate();
+    AttachTag::truncate();
+    Image::truncate();
+    UserProfile::truncate();
+    Schema::enableForeignKeyConstraints();
+
+    // データを生成
+    factory(User::class, 5)->create()->each(function ($user) {
+        factory(Post::class, rand(1, 3))->create(['user_id' => $user->id])->each(function ($post) use ($user){
+            factory(Comment::class, rand(1, 3))->create(['post_id' => $post->id, 'user_id' => $user->id]);
+            factory(Image::class, rand(0, 3))->create(['imageable_id' => $post->id, 'imageable_type' => 'App\Post']);
+        });
+        factory(UserProfile::class, rand(0, 1))->create(['user_id' => $user->id]);
+        factory(Image::class, rand(0, 1))->create(['imageable_id' => $user->id, 'imageable_type' => 'App\User']);
+    });
+
+    factory(Tag::class, 5)->create();
+    factory(AttachTag::class, 10)->create();
+
+    // 生成したデータを確認
+    $users = User::all()->toArray();
+    $userProfiles = UserProfile::all()->toArray();
+    $posts = Post::all()->toArray();
+    $comments = Comment::all()->toArray();
+    $images = Image::all()->toArray();
+    $tags = Tag::all()->toArray();
+    $attachTags = AttachTag::all()->toArray();
+
+    ddd($users, $userProfiles, $posts, $comments, $images, $tags, $attachTags);
+});
+
+Route::get('/relation/sandbox/belongsTo', function () {
+    // N:1 (Lazy Loading:怠惰な読み込み)
+    $posts = Post::all();
+    $postNames = [];
+    foreach ($posts as $post) {
+        $postNames[] = "tilte:{$post->title}, content{$post->content_text}, post_user{$post->user->name}";
+    }
+    ddd($postNames);
+});
+
+Route::get('/relation/sandbox/belongsToWith', function () {
+    // with レコード走査時に、関連先オブジェクトを一括生成する (eager loading:熱望的な読み込み)
+    $posts = Post::with('user')->get();
+    $postNames = [];
+    foreach ($posts as $post) {
+        $postNames[] = "tilte:{$post->title}, content{$post->content_text}, post_user{$post->user->name}";
+    }
+    ddd($postNames);
+});
+
+Route::get('/relation/sandbox/belongsToLoad', function () {
+    // load レコード走査時に、関連先オブジェクトを一括生成する事を後から宣言する (遅延Eagerロード)
+    $posts = Post::all();
+    $posts->load('user');
+    $postNames = [];
+    foreach ($posts as $post) {
+        $postNames[] = "tilte:{$post->title}, content{$post->content_text}, post_user{$post->user->name}";
+    }
+    ddd($postNames);
+});
+
+Route::get('/relation/sandbox/hasMany', function () {
+    // 1:N
+    $posts = Post::with('comments')->get();
+    $postComments = [];
+    foreach ($posts as $key => $post) {
+        foreach ($post->comments as $comment) {
+            $postComments[$key][] = "tilte:{$post->title}, content{$post->content_text}, message:{$comment->message}";
+        }
+    }
+    ddd($postComments);
+});
+
+Route::get('/relation/sandbox/linkHasMany/{id}', function ($id) {
+    // リレーションを繋げて取得
+    $user = User::with('posts.comments')->find($id);
+    $postComments = [];
+    foreach ($user->posts as $post) {
+        $postComments[] = "post_title:{$post->title}, comment_count:{$post->comments->count()}";
+    }
+    ddd($user->name, $postComments);
+});
+
+Route::get('/relation/sandbox/efficientHasMany/{id}', function ($id) {
+    // 効率的に必要なカラムのみ指定して取得する
+    // Point: 外部Keyに該当するカラムは取得対象に含めること。ORMがCollection化する時にデータが欠落する。
+    $user = User::with([
+        'posts:id,title,user_id',
+        'posts.comments:id,post_id'
+    ])->select(['id', 'name'])->find($id);
+    $postComments = [];
+    foreach ($user->posts as $post) {
+        $postComments[] = "post_title:{$post->title}, comment_count:{$post->comments->count()}";
+    }
+    ddd($user->name, $postComments);
+});
+
+Route::get('/relation/sandbox/relationMethod', function () {
+    // with レコード走査時に、関連先オブジェクトを一括生成する。と思い気やメソッドを使うとクエリビルダーになるので注意
+    $withPosts = Post::with('comments')->get();
+    ddd($withPosts[0]->comments, $withPosts[0]->comments());
 });
