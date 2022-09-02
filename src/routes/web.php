@@ -376,3 +376,80 @@ Route::get('/relation/sandbox/relationMethod', function () {
     $withPosts = Post::with('comments')->get();
     ddd($withPosts[0]->comments, $withPosts[0]->comments());
 });
+
+Route::get('/relation/sandbox/hasOne/', function () {
+    // 1:1
+    $users = User::with('profile')->get();
+    $profiles = [];
+    foreach ($users as $user) {
+        $profile = is_null($user->profile) ? 'プロフィール未登録' : "{$user->profile->country}-{$user->profile->city}";
+        $profiles[] = "user_name:{$user->name}, profile:{$profile}";
+    }
+    ddd($profiles);
+});
+
+Route::get('/relation/sandbox/belongsToMany/', function () {
+    // 多:多
+    $posts = Post::with('tags')->get();
+    $postTags = [];
+    foreach ($posts as $key => $post) {
+        $tagNames = implode(" | ", $post->tags->pluck('name')->toArray());
+        $postTags[] = "post_title:{$post->title}, tags:{$tagNames}";
+    }
+    // 多:多(逆方向)
+    $tags = Tag::with('posts')->get();
+    $tagPosts = [];
+    foreach ($tags as $tag) {
+        $tagPosts[] = "tag:{$tag->name}, post_count:{$tag->posts->count()}";
+    }
+    ddd($postTags, $tagPosts);
+});
+
+Route::get('/relation/sandbox/hasManyThrough/', function () {
+    // リレーションのテーブルをスキップして更に先のリレーションデータを取得
+    $users = User::with('postComments')->get();
+    $postComments = [];
+    foreach ($users as $key => $user) {
+        foreach($user->postComments as $comment) {
+            $postComments[$key][] = "user_name:{$user->name}, comment:{$comment->message}";
+        }
+    }
+    ddd($postComments);
+});
+
+Route::get('/relation/sandbox/morphOne/', function () {
+    // 1:1 ポリモーフィックリレーション
+    $users = User::with('image')->get();
+    $userImages = [];
+    foreach ($users as $user) {
+        $imageUrl = $user->image->url ?? 'noImage!!!';
+        $userImages[] = "user_name:{$user->name}, image_url:{$imageUrl}";
+    }
+    ddd($userImages);
+});
+
+Route::get('/relation/sandbox/morphMany/', function () {
+    // 1:N ポリモーフィックリレーション
+    $posts = Post::with('images')->get();
+    $postImages = [];
+    foreach ($posts as $key => $post) {
+        foreach($post->images as $image) {
+            $postImages[$key][] = "title:{$post->title}, image_url:{$image->url}";
+        }
+    }
+    ddd($postImages);
+});
+
+Route::get('/relation/sandbox/morphTo/', function () {
+    // N:1 or 1:1 ポリモーフィックリレーション
+    $images = Image::with('imageable')->get();
+    $imageValues = [];
+    foreach ($images as $key => $image) {
+        $morphModel = $image->imageable;
+
+        $imageValues[] = ($morphModel instanceof Post
+                ? "PostTitle:{$morphModel->title}" : "UserName:{$morphModel->name}")
+            . ", image_url:{$image->url}";
+    }
+    ddd($imageValues);
+});

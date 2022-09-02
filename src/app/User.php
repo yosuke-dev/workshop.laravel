@@ -47,4 +47,20 @@ class User extends Authenticatable
         // 自分がしたCommentを全部取得
         return $this->hasMany(Comment::class);
     }
+
+    public function postComments()
+    {
+        // 自PostにもらったCommentを全部取得
+        return $this->hasManyThrough(Comment::class, Post::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
 }

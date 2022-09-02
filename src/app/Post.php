@@ -30,4 +30,14 @@ class Post extends Model
     {
         return "{$this->title} : {$this->content_text}";
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'attach_tags');
+    }
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
 }
