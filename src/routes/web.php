@@ -453,3 +453,35 @@ Route::get('/relation/sandbox/morphTo/', function () {
     }
     ddd($imageValues);
 });
+
+Route::get('/relation/sandbox/add/{post_id}/{user_id}/{message}', function ($post_id, $user_id, $message) {
+    $post = Post::with('comments')->find($post_id);
+    $comment = new Comment([
+        'user_id' => $user_id,
+        'message' => $message,
+    ]);
+    $post->comments()->save($comment);
+    $changedPost = Post::with('comments')->find($post_id);
+    ddd($post->toArray(), $changedPost->toArray());
+});
+
+Route::get('/relation/sandbox/delete/{post_id}', function ($post_id) {
+    $post = Post::with('comments')->find($post_id);
+    $post->comments()->delete();
+    $changedPost = Post::with('comments')->find($post_id);
+    ddd($post->toArray(), $changedPost->toArray());
+});
+
+Route::get('/relation/sandbox/attach/{post_id}/{tag_id}', function ($post_id, $tag_id) {
+    $post = Post::with('tags')->find($post_id);
+    $post->tags()->attach($tag_id);
+    $changedPost = Post::with('tags')->find($post_id);
+    ddd($post->tags->toArray(), $changedPost->tags->toArray());
+});
+
+Route::get('/relation/sandbox/detach/{post_id}/{tag_id}', function ($post_id, $tag_id) {
+    $post = Post::with('tags')->find($post_id);
+    $post->tags()->detach($tag_id);
+    $changedPost = Post::with('tags')->find($post_id);
+    ddd($post->tags->toArray(), $changedPost->tags->toArray());
+});
