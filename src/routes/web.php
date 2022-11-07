@@ -18,6 +18,7 @@ use App\Post;
 use App\Tag;
 use App\User;
 use App\UserProfile;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
@@ -484,4 +485,12 @@ Route::get('/relation/sandbox/detach/{post_id}/{tag_id}', function ($post_id, $t
     $post->tags()->detach($tag_id);
     $changedPost = Post::with('tags')->find($post_id);
     ddd($post->tags->toArray(), $changedPost->tags->toArray());
+});
+
+Route::get('/user/{id}', function ($id) {
+    $post = User::find($id);
+    Artisan::call('command:logger', [
+        'id' => 1, '--type' => 'user'
+    ]);
+    ddd($post);
 });
