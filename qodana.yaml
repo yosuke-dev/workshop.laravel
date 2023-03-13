@@ -1,0 +1,16 @@
+version: 1.0
+profile:
+  path: qodana_profile.xml
+exclude:
+  - name: All
+    paths:
+      - .github
+      - infra
+      - src/.idea
+      - src/bootstrap
+      - src/config
+      - src/database/migrations
+      - src/public
+      - src/routes
+      - src/storage
+      - src/vendor
