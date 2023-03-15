@@ -4,8 +4,16 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $title
+ * @property string $content_text
+ */
 class Post extends Model
 {
     protected $fillable = [
@@ -16,33 +24,35 @@ class Post extends Model
 
     use SoftDeletes;
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function comments()
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function scopeUpdateLastFiveMinutes($query)
+    /** @noinspection PhpUnused */
+    public function scopeUpdateLastFiveMinutes($query): void
     {
         $now = new Carbon();
         $query->where('updated_at', '>', $now->subMinutes(5));
     }
 
-    public function getTitleAndContentAttribute()
+    /** @noinspection PhpUnused */
+    public function getTitleAndContentAttribute(): string
     {
         return "{$this->title} : {$this->content_text}";
     }
 
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'attach_tags');
     }
 
-    public function images()
+    public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
     }
