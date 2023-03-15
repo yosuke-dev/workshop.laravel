@@ -8,6 +8,11 @@ exclude:
       - .github
       - infra
       - src/.idea
+      - src/artisan
+      - src/app/Http/Middleware
+      - src/app/Http/Kernel.php
+      - src/app/Exceptions/Handler.php
+      - src/app/Http/Controllers/Auth
       - src/bootstrap
       - src/config
       - src/database/migrations
@@ -15,3 +20,6 @@ exclude:
       - src/routes
       - src/storage
       - src/vendor
+      - src/phpunit.xml
+      - src/.editorconfig
+      - .editorconfig
