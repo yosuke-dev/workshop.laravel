@@ -36,13 +36,13 @@ class LoggerCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $id = $this->argument('id');
         $type = $this->option('type');
-        $this->info("[{$this->description}]が実行されました. 引数:id={$id}, オプション:{$type}");
+        $this->info("[$this->description]が実行されました. 引数:id=$id, オプション:$type");
 
         switch ($type) {
             case "user":

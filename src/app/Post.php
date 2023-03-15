@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,6 +14,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @property string $title
  * @property string $content_text
+ * @property-read User|null $user
+ * @property-read Collection|Comment[] $comments
+ * @property-read Collection|Tag[] $tags
+ * @property-read Collection|Image[] $images
  */
 class Post extends Model
 {
@@ -44,7 +49,7 @@ class Post extends Model
     /** @noinspection PhpUnused */
     public function getTitleAndContentAttribute(): string
     {
-        return "{$this->title} : {$this->content_text}";
+        return "$this->title : $this->content_text";
     }
 
     public function tags(): BelongsToMany
