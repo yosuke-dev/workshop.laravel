@@ -18,7 +18,7 @@ jobs:
         with:
           php-version: 7.4
       - name: 'install packages'
-        run: composer dump-autoload
+        run: composer install
         working-directory: ./src
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@main
