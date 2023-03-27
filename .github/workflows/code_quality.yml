@@ -1,7 +1,6 @@
 name: Qodana
 on:
   workflow_dispatch:
-  pull_request:
   push:
     branches:
       - playground
@@ -21,6 +20,6 @@ jobs:
         run: composer install
         working-directory: ./src
       - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@main
+        uses: JetBrains/qodana-action@v2022.3.4
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
