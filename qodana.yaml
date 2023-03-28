@@ -1,9 +1,6 @@
 version: "1.0"
-linter: jetbrains/qodana-php:2023.1-eap
-php:
-  version: "7.4"
+linter: jetbrains/qodana-php:2022.3-eap
 bootstrap: |+
-  php -v
   composer install --no-scripts --working-dir=src
 exclude:
   - name: All
