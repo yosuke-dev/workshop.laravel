@@ -1,5 +1,7 @@
 version: "1.0"
 linter: jetbrains/qodana-php:2022.3-eap
+php:
+  version: "7.0"
 profile:
   path: qodana_profile.xml
 exclude:
