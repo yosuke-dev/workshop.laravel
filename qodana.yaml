@@ -1,7 +1,8 @@
 version: "1.0"
 linter: jetbrains/qodana-php:2022.3-eap
 bootstrap: |+
-  composer install --no-scripts --working-dir=src
+  apt -y install php7.4.6 \
+  && composer install --no-scripts --working-dir=src
 exclude:
   - name: All
     paths:
