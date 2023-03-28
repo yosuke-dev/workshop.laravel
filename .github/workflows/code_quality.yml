@@ -19,7 +19,7 @@ jobs:
           docker run --rm \
           -v ${GITHUB_WORKSPACE}:/data/project/ \
           -e QODANA_TOKEN=${{ secrets.QODANA_TOKEN }} \
-          -e QODANA_BRANCH=${{ github.ref }} \
-          -e QODANA_REVISION=${{ github.sha }} \
+          -e QODANA_BRANCH=${GITHUB_REF} \
+          -e QODANA_REVISION=${GITHUB_SHA} \
           -e QODANA_JOB_URL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID} \
           jetbrains/qodana-php
