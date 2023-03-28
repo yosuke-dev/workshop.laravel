@@ -17,7 +17,7 @@ jobs:
       - name: 'Qodana Scan'
         run: |
           docker run --rm \
-          -v /:/data/project/ \
+          -v ${GITHUB_WORKSPACE}:/data/project/ \
           -e QODANA_TOKEN=${{ secrets.QODANA_TOKEN }} \
           -e QODANA_BRANCH=${{ github.ref }} \
           -e QODANA_REVISION=${{ github.sha }} \
