@@ -1,15 +1,9 @@
 version: "1.0"
 linter: jetbrains/qodana-php:2022.3-eap
+php:
+  version: "7.4"
 bootstrap: |+
-  export DEBIAN_FRONTEND=noninteractive
-  apt install software-properties-common
-  add-apt-repository --yes ppa:ondrej/php
-  apt update
-  apt -y install php7.4
-  update-alternatives --set php /usr/bin/php7.1
-  apt -y install php7.4-common php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-curl php7.4-gd php7.4-imagick php7.4-cli php7.4-dev php7.4-imap php7.4-mbstring php7.4-opcache php7.4-soap php7.4-zip php7.4-intl
   php -v
-  php -i
   composer install --no-scripts --working-dir=src
 exclude:
   - name: All
