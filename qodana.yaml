@@ -1,7 +1,7 @@
 version: "1.0"
 linter: jetbrains/qodana-php:2022.3-eap
 bootstrap: |+
-  cd ./src && composer install -–no-scripts
+  cd ./src && composer install --no-scripts
 exclude:
   - name: All
     paths:
