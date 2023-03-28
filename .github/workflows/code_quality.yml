@@ -16,7 +16,7 @@ jobs:
           docker pull jetbrains/qodana-php
       - name: 'Qodana Scan'
         run: |
-          docker run --rm -it \
+          docker run --rm \
           -v /:/data/project/ \
           -e QODANA_TOKEN=${{ secrets.QODANA_TOKEN }} \
           -e QODANA_BRANCH=${{ github.ref }} \
