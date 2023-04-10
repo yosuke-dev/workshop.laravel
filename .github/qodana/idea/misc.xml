@@ -2,5 +2,7 @@
 <project version="4">
     <component name="PhpEntryPointsManager">
         <pattern value="\App\*" member="get*Attribute" />
+        <pattern value="\App\*" member="set*Attribute" />
+        <pattern value="\App\*" member="scope*Attribute" />
     </component>
 </project>
