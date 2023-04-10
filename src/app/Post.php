@@ -39,14 +39,12 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
-    /** @noinspection PhpUnused */
     public function scopeUpdateLastFiveMinutes($query): void
     {
         $now = new Carbon();
         $query->where('updated_at', '>', $now->subMinutes(5));
     }
 
-    /** @noinspection PhpUnused */
     public function getTitleAndContentAttribute(): string
     {
         return "$this->title : $this->content_text";
