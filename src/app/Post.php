@@ -61,4 +61,9 @@ class Post extends Model
     {
         return $this->morphMany(Image::class, 'imageable');
     }
+
+    public function getShortenTitleAttribute(): string
+    {
+        return substr($this->title, 0, 10);
+    }
 }

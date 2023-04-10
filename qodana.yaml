@@ -1,6 +1,7 @@
 version: "1.0"
 linter: jetbrains/qodana-php:2022.3-eap
 bootstrap: |+
+  cp .github/qodana/idea/ .idea/
   composer install --no-scripts --working-dir=src
 exclude:
   - name: All
