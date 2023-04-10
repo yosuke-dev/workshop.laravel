@@ -3,6 +3,6 @@
     <component name="PhpEntryPointsManager">
         <pattern value="\App\*" member="get*Attribute" />
         <pattern value="\App\*" member="set*Attribute" />
-        <pattern value="\App\*" member="scope*Attribute" />
+        <pattern value="\App\*" member="scope*" />
     </component>
 </project>
