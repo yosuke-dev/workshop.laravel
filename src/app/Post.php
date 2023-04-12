@@ -64,4 +64,9 @@ class Post extends Model
     {
         return substr($this->title, 0, 10);
     }
+
+    private function unUsedFunction(): void
+    {
+        // This function is not used anywhere
+    }
 }
